@@ -1,7 +1,6 @@
 @import '<stdio.h>';
 
-int .main {
+.main:int {
 	printf: "%s\n" "Hello, world!";
-
 	return: 0;
 }

@@ -88,12 +88,13 @@ const parse = function(path) {
 	for (const r in ast.stylesheet.rules) {
 		if (ast.stylesheet.rules.hasOwnProperty(r)) {
 			const rule = ast.stylesheet.rules[r]
+			console.log(rule)
 			if (rule.type == 'import') {
 				includes.push(rule.import.replace(/["']/g, ''))
 			} else if (rule.type == 'rule') {
-				const selectorsplit = rule.selectors[0].split(" ")
-				let type = selectorsplit[0]
-				let funcname = selectorsplit[1].replace('.', '')
+				const selectorsplit = rule.selectors[0].split(":")
+				let type = selectorsplit[1]
+				let funcname = selectorsplit[0].replace('.', '')
 				const c_func = new c_function(funcname, type)
 				console.log(`Parser: Created new function ${funcname}`)
 				for (const d in rule.declarations) {
