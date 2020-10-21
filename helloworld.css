@@ -1,0 +1,5 @@
+int .main {
+	include: '<stdio.h>';
+	printf: "%s\n" "Hello, world!";
+	return: 0;
+}

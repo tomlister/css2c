@@ -1,0 +1,25 @@
+{
+  "name": "css2c",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "compile-run": "^2.3.4",
+    "css": "^3.0.0",
+    "yargs": "^16.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomlister/css2c.git"
+  },
+  "author": "tomlister",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tomlister/css2c/issues"
+  },
+  "homepage": "https://github.com/tomlister/css2c#readme"
+}
