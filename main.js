@@ -88,29 +88,31 @@ const parse = function(path) {
 	for (const r in ast.stylesheet.rules) {
 		if (ast.stylesheet.rules.hasOwnProperty(r)) {
 			const rule = ast.stylesheet.rules[r]
-			const selectorsplit = rule.selectors[0].split(" ")
-			let type = selectorsplit[0]
-			let funcname = selectorsplit[1].replace('.', '')
-			const c_func = new c_function(funcname, type)
-			console.log(`Parser: Created new function ${funcname}`)
-			for (const d in rule.declarations) {
-				if (rule.declarations.hasOwnProperty(d)) {
-					const decl = rule.declarations[d]
-					if (decl.property === 'include') {
-						includes.push(decl.value.replace(/["']/g, ''))
-					} else if (decl.property === 'return') {
-						let args = decl.value.split(/("[^"]*"|'[^']*'|[\S]+)+/).filter(function(e) { return /\S/.test(e); })
-						let call = new c_call(decl.property, args, 'return')
-						c_func.addCall(call)
-					} else {
-						let args = decl.value.split(/("[^"]*"|'[^']*'|[\S]+)+/).filter(function(e) { return /\S/.test(e); })
-						let call = new c_call(decl.property, args)
-						c_func.addCall(call)
+			if (rule.type == 'import') {
+				includes.push(rule.import.replace(/["']/g, ''))
+			} else if (rule.type == 'rule') {
+				const selectorsplit = rule.selectors[0].split(" ")
+				let type = selectorsplit[0]
+				let funcname = selectorsplit[1].replace('.', '')
+				const c_func = new c_function(funcname, type)
+				console.log(`Parser: Created new function ${funcname}`)
+				for (const d in rule.declarations) {
+					if (rule.declarations.hasOwnProperty(d)) {
+						const decl = rule.declarations[d]
+						if (decl.property === 'return') {
+							let args = decl.value.split(/("[^"]*"|'[^']*'|[\S]+)+/).filter(function(e) { return /\S/.test(e); })
+							let call = new c_call(decl.property, args, 'return')
+							c_func.addCall(call)
+						} else {
+							let args = decl.value.split(/("[^"]*"|'[^']*'|[\S]+)+/).filter(function(e) { return /\S/.test(e); })
+							let call = new c_call(decl.property, args)
+							c_func.addCall(call)
+						}
 					}
 				}
+				console.log(`Parser: ${funcname} contains ${c_func.calls.length} call(s)`)
+				functions.push(c_func)
 			}
-			console.log(`Parser: ${funcname} contains ${c_func.calls.length} call(s)`)
-			functions.push(c_func)
 		}
 	}
 	return transpile(includes, functions)
