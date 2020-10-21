@@ -21,6 +21,14 @@ class c_call {
 		}
 		if (this.type === undefined) {
 			return `	${this.name}(${genargs});\n`
+		} else if (this.type == 'var') {
+			if (parseFloat(this.args)) {
+				return `	float ${this.name} = ${this.args};\n`
+			} else if (parseInt(this.args)) {
+				return `	int ${this.name} = ${this.args};\n`
+			} else {
+				return `	char ${this.name}[] = ${this.args};\n`
+			}
 		} else if (this.type == 'return') {
 			return `	return ${genargs};\n`
 		}
@@ -88,7 +96,6 @@ const parse = function(path) {
 	for (const r in ast.stylesheet.rules) {
 		if (ast.stylesheet.rules.hasOwnProperty(r)) {
 			const rule = ast.stylesheet.rules[r]
-			console.log(rule)
 			if (rule.type == 'import') {
 				includes.push(rule.import.replace(/["']/g, ''))
 			} else if (rule.type == 'rule') {
@@ -100,7 +107,11 @@ const parse = function(path) {
 				for (const d in rule.declarations) {
 					if (rule.declarations.hasOwnProperty(d)) {
 						const decl = rule.declarations[d]
-						if (decl.property === 'return') {
+						if (/[a-zA-Z]+\([^\)]*\)(\.[^\)]*\))?/.test(decl.value) && decl.value.startsWith('var')) {
+							let value = decl.value.match(new RegExp('var('+"(.*)"+')'))[1].replace(/[()]/g,'')
+							let call = new c_call(decl.property, value, 'var')
+							c_func.addCall(call)
+						} else if (decl.property === 'return') {
 							let args = decl.value.split(/("[^"]*"|'[^']*'|[\S]+)+/).filter(function(e) { return /\S/.test(e); })
 							let call = new c_call(decl.property, args, 'return')
 							c_func.addCall(call)
